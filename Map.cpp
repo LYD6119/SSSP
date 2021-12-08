@@ -2,84 +2,74 @@
 
 Map::Map(int VertexNum) {
     this -> VertexNum = VertexNum;
-    Direct_Dist = new Vertex[VertexNum + 1]; 
-    Minimal_Dist = new int[VertexNum];
-    Pre_Vertex = new int[VertexNum];
+    Origin=new int*[VertexNum];
+    Dist=new int*[VertexNum];
+    Path=new int*[VertexNum];
     Visited = new int[VertexNum];
+    for(int i=0;i<VertexNum;i++){
+        Origin[i]=new int[VertexNum];
+        Dist[i]=new int[VertexNum];
+        Path[i]=new int[VertexNum];
+        for(int j=0;j<VertexNum;j++){
+            Origin[i][j] = Dist[i][j] = (i==j)?0:INF;
+            Path[i][j] = -1;
+        }
+        Visited[i] = 0;
+    }
+    Vertexes = new char[VertexNum + 1];
 }
 
 bool Map::Init(int EdgeNum){
-    //邻接表初始化
-    char _vertexes[VertexNum + 1];
+    this->EdgeNum=EdgeNum;
+    //数组初始化
     for (int i = 0; i < VertexNum; i ++) {
-        cin>>_vertexes[i];
-        Direct_Dist[i] = new VNode(i,0,NULL);
-        Minimal_Dist[i] = INT_MAX;
-        Pre_Vertex[i] = -1;
-        Visited[i] = 0;
+        cin>>Vertexes[i];
     }
-    Vertexes=_vertexes;
-    
-    //邻接表构建
+    //邻接矩阵构建
     for (int i = 0; i < EdgeNum; i++) {
-        int start,end, distance;
-        cin>>start>>end>>distance;   //读取有向边的起点、终点、权值
-        Vertex temp = Direct_Dist[start] -> next;
-        Vertex _vertex = new VNode(end,distance,temp);
-        Direct_Dist[start] -> next = _vertex;
+        int _start,_end, _distance;
+        cin>>_start>>_end>>_distance;   //读取有向边的起点、终点、权值
+        AddEdge(_start,_end,_distance);
     }
     cout<<"Initialize success."<<endl;
     return true;
 }
 
-void Map::PathSeavoidrch(){
-    char _start, _end;
-    cin>>_start>>_end;
-    int Start = 0, End = 0;
-    for(int i = 0; i < VertexNum; i ++){    //找到起点/终点标号
-        if(Vertexes[i] == _start)  Start=i;
-        if(Vertexes[i] == _end)  End=i;
-    }
-    Vertex ptr = Direct_Dist[Start];
-    while(ptr != NULL){   //初始化最小路径数组
-        Minimal_Dist[ ptr->Sign ] = ptr->Distance;
-        if(ptr->Distance != INT_MAX && ptr->Distance != 0)  //初始化Pre数组
-            Pre_Vertex[ptr->Sign] = Start;
-        ptr = ptr->next;
-    }
-    Visited[Start] = 1;
-    while(true){
-        int temp = -1, minPath = INT_MAX;
-        for(int i = 0; i < VertexNum; i ++){     //取出当前最短路径组中的最小元
-            ptr = Direct_Dist[i];
-            while(ptr!=NULL){
-                if(Visited[ ptr->Sign ] != 1 && Minimal_Dist[ ptr->Sign ] <= minPath){
-                    temp= ptr->Sign;
-                    minPath = Minimal_Dist[ ptr->Sign ];
-                }
-                ptr = ptr->next;
-            }
-        }
-        //最短路径为无穷，停止搜索
-        if(minPath == INT_MAX)  break;
-        Visited[temp] = 1;   //标记为已探索
-        ptr = Direct_Dist[temp];   //更新搜索连通项起点
-        while(ptr != NULL){   //搜索连通项，更新最短路径
-            if(Visited[ ptr->Sign ] != 1 && ptr->Distance + minPath < Minimal_Dist[ ptr->Sign ]){
-                Minimal_Dist[ ptr->Sign ] = ptr->Distance + minPath;
-                Pre_Vertex[ ptr->Sign ] = temp;
-            }
-            ptr = ptr->next;
-        }
-    }
-    //最短路径输出
-    if(Minimal_Dist[End] != INT_MAX)
-        cout<<"Minimal_Dist is:"<<Minimal_Dist[End]<<endl;
-    int pre = Pre_Vertex[End];
-    cout<<End;
-    while(pre != -1){
-        cout<<" <- "<<pre;
-        pre=Pre_Vertex[pre];
-    }
-
+void Map::AddEdge(int _start,int _end,int _distance){
+    Origin[_start][_end] = Dist[_start][_end] = _distance;
 }
+
+void Map::Floyd(){
+    Check();
+    for(int k=0;k<VertexNum;k++){
+        for(int i=0;i<VertexNum;i++){
+            for(int j=0;j<VertexNum;j++){
+                if(Dist[i][j] > Dist[i][k] + Dist[k][j]){
+                    Dist[i][j] = Dist[i][k] + Dist[k][j];
+                    Path[i][j] = k;
+                }
+            }
+        }
+    }
+    cout<<"After Floyd"<<endl;
+    Check();
+}
+
+int** Map::GetDist(){
+    return Dist;
+}
+
+int** Map::GetOrigin(){
+    return Origin;
+}
+
+void Map::Check(){
+    for(int i=0;i<VertexNum;i++){
+        for(int j=0;j<VertexNum;j++){
+            cout<<(Dist[i][j]==INF?-1:Dist[i][j])<<"\t";
+        }cout<<endl;
+    }cout<<endl;
+}
+
+
+

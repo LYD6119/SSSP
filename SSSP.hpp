@@ -4,31 +4,43 @@
 #include<stdio.h>
 #include<string.h>
 using namespace std;
-typedef struct Node{
-    int Sign;
-    int Distance;
-    Node* next;
-    Node(){}
-    Node(int Sign,int Distance,Node* Next){
-        this->Sign=Sign;
-        this->Distance=Distance;
-        this->next=Next;
-    }
-}VNode,*Vertex;
+#define INF 10000
 
 class Map{
-private:
-    Vertex* Direct_Dist;
-    int *Minimal_Dist;
-    int *Pre_Vertex;
+protected:
+    int VertexNum;   //顶点数
+    int EdgeNum;
+    int **Origin;
+    int **Dist;
+    int **Path;
     int *Visited;
-    int VertexNum;
     char *Vertexes;
-public:void
+    ///
+public:
     Map(int VertexNum);
     bool Init(int EdgeNum);
-    //~Map();
-    void PathSearch();
+    void AddEdge(int Start,int End,int Distance);
+    void Floyd();
+    int **GetDist();
+    int **GetOrigin();
+
+    void Check();
 };
+
+class AOE:public Map{
+private:
+    int Source,Destination;
+    int SourceNum;
+    int EdgeNum;
+    int *Topologic, *Indegree, *Visited;
+    int *VE,*VL,*E,*L;
+public:
+    AOE(int VertexNum,int _start,int _end);
+    void Init(int** _origin,int** _dist,int _source);
+    bool Topological_Sort();
+    void VL_Count();
+    void Find_Imp();
+};
+
 
 #endif
