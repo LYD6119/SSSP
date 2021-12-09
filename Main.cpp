@@ -4,21 +4,26 @@
 
 int main(){
     int vertexNum,edgeNum,start,end;
-    cin>>vertexNum>>edgeNum;
+    cout<<"Vertex Number: ";
+    cin>>vertexNum;
+    cout<<"Edge Number: ";
+    cin>>edgeNum;
     Map map(vertexNum);
     if(map.Init(edgeNum)){
-        map.Floyd();
+        char start,end;
+        cout<<"Start and End: ";
+        cin>>start>>end;
+        map.MinimalPath(start,end);
+        AOE aoe(vertexNum,map.GetSign(),start,end);
+        aoe.Init(map.GetOrigin(),map.GetDist());
+        aoe.Critical_Path();
     }
-    cin>>start>>end;
-    AOE aoe(vertexNum,start,end);
-    aoe.Init(map.GetOrigin(),map.GetDist(),start);
-    aoe.Find_Imp();
     return 0;
 }
 
 /*
 9 11
-0 1 2 3 4 5 6 7 8
+A B C D E F G H I
 0 1 6
 0 2 4
 0 3 5
@@ -27,6 +32,20 @@ int main(){
 3 5 2
 4 6 9
 4 7 7
+5 7 4
+6 8 2
+7 8 4
+////////////
+9 11
+1 2 3 4 5 6 7 8 9
+0 1 6
+0 2 4
+0 3 5
+1 4 1
+2 4 1
+3 5 2
+4 6 9
+4 7 8
 5 7 4
 6 8 2
 7 8 4
