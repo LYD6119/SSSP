@@ -19,12 +19,14 @@ Map::Map(int VertexNum) {
 
 bool Map::Init(int EdgeNum){
     //读取顶点标号
-    cout<<">> Vertex Sign:"<<endl;
+    cout<<">> Vertex Sign: ";
     for(int i=0;i<VertexNum;i++){
         cin>>Sign[i];
     }
     //邻接矩阵构建
+    cout<<">> Edges: "<<endl;
     for (int i = 0; i < EdgeNum; i++) {
+        cout<<"--Edge "<<i+1<<" : ";
         int _start, _end, _distance;
         cin>>_start>>_end>>_distance;   //读取有向边的起点、终点、路径长度
         if(_end >= VertexNum  || _distance >= INF ){
