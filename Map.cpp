@@ -29,7 +29,7 @@ bool Map::Init(int EdgeNum){
         cout<<"--Edge "<<i+1<<" : ";
         int _start, _end, _distance;
         cin>>_start>>_end>>_distance;   //读取有向边的起点、终点、路径长度
-        if(_end >= VertexNum  || _distance >= INF ){
+        if(_end >= VertexNum -1 || _distance >= INF ){
             cout<<">> Initialize failed.Check your map!"<<endl;
             return false;
         }
