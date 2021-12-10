@@ -11,17 +11,18 @@ class Map{
 protected:
     int VertexNum;   //顶点数
     int **Origin;   //原图
-    int **Dist;     //最短路径长度数组
-    int **Path;     //最短路径寻路数组
+    int **Dist;     //最短距离数组
+    int **Path;     //中间节点数组
     char *Sign;
     ///
     void FindPath(int Start,int End);  //递归寻路
     void AddEdge(int Start,int End,int Distance);  //添加有向边
-    void Floyd();   //SSSP-弗洛伊德
+    void Floyd();   //弗洛伊德
 public:
     Map(int VertexNum);
     bool Init(int EdgeNum);
-    void MinimalPath(char start, char end);  //搜索最短路径
+    bool MinimalPath(char start, char end);  //搜索最短路径
+    ///////////////////////////////////////
     int **GetDist();    //返回最短路径数组地址
     int **GetOrigin();   //返回原图地址
     char *GetSign();

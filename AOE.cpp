@@ -1,15 +1,15 @@
 #include"SSSP.hpp"
 
 AOE::AOE(int VertexNum,char *_sign,char start,char end):Map(VertexNum){
-    Topologic = new int[VertexNum];
-    Indegree = new int[VertexNum];
-    Visited = new int[VertexNum];
-    VE = new int[VertexNum];
-    VL = new int[VertexNum];
+    Topologic = new int[VertexNum + 1];
+    Indegree = new int[VertexNum + 1];
+    Visited = new int[VertexNum + 1];
+    VE = new int[VertexNum + 1];
+    VL = new int[VertexNum + 1];
     Sign = _sign;
     //E = new int[VertexNum];
     //L = new int[VertexNum];
-    for(int i = 0; i < VertexNum; i++){   //初始化
+    for(int i = 0; i <= VertexNum; i++){   //初始化
         Topologic[i] = -1;
         Indegree [i] = Visited[i] = 0;
         VE[i] = VL[i] = 0;
@@ -43,7 +43,6 @@ void AOE::_init(int** _origin,int** _dist,int _source){
 
 
 bool AOE::Topological_Sort(){   //拓扑排序
-    if(Dist[Source][Destination] >= INF) return false;
     int Stack[VertexNum + 2];
     int top = 0, indic = 0;
     for(int i = 0; i < VertexNum; i++){
@@ -56,10 +55,10 @@ bool AOE::Topological_Sort(){   //拓扑排序
         int v = Stack[top--];
         Topologic[indic++] = v;
         for(int i = 0;i<VertexNum;i++){  //更新VE
-            if(Dist[v][i] < INF && v != i){
+            if(Origin[v][i] < INF && v != i){
                 Indegree[i]--;
-                if(VE[v] + Dist[v][i] > VE[i])
-                    VE[i] = VE[v] + Dist[v][i];
+                if(VE[v] + Origin[v][i] > VE[i])
+                    VE[i] = VE[v] + Origin[v][i];
             }
         }
         for(int i=0;i<VertexNum;i++){
@@ -74,21 +73,14 @@ bool AOE::Topological_Sort(){   //拓扑排序
 }
 
 
-void AOE::CheckTopo(){
-    cout<<"Topologic sort: ";
-    for(int i = 0; i < VertexNum; i++){
-        if(Topologic[i] != -1)  cout<< Sign[Topologic[i]] <<" ";
-    }
-    cout<<endl;
-}
 
 void AOE::VL_Count(){    //计算VL数组
     VL[Topologic[SourceNum-1]] = VE[Topologic[SourceNum-1]];
     for(int i = SourceNum - 2; i > 0; i--){
         int v = Topologic[i];
         for(int i = 0;i < VertexNum; i++){
-            if(Dist[v][i] < INF){
-                int temp = VL[i] - Dist[v][i];
+            if(Origin[v][i] < INF){
+                int temp = VL[i] - Origin[v][i];
                 if(VL[v] = -1) VL[v] = temp;
                 else if(temp < VL[v])  VL[v] = temp;
             }
@@ -97,29 +89,37 @@ void AOE::VL_Count(){    //计算VL数组
 }
 
 void AOE::Critical_Path(){   //寻找关键路径
-    if(! Topological_Sort()){
-        cout<<"Topological sort failed. Check your AOE network."<<endl;
+    if( !Topological_Sort()){
+        cout<<">> Topological sort failed. Check your AOE network."<<endl;
         return;
     }
     VL_Count();
     CheckTopo();
     CheckVE();
     CheckVL();
-    cout<<"Critical path: "<<endl;
+    cout<<">> Critical path: "<<endl;
     for(int i=0;i<SourceNum;i++){
         int v=Topologic[i];
         for(int j = 0; j < VertexNum; j++){
-            if(v!=j && Dist[v][j] < INF){   //通过VE、VL计算E、L
+            if(v!=j && Origin[v][j] < INF){   //通过VE、VL计算E、L
                 int _e = VE[v];
-                int _l = VL[j] - Dist[v][j];
-                if(_e == _l)  cout<<Sign[v]<<"--("<<Dist[v][j]<<")-->"<<Sign[j]<<endl;
+                int _l = VL[j] - Origin[v][j];
+                if(_e == _l)  cout<<Sign[v]<<"--("<<Origin[v][j]<<")-->"<<Sign[j]<<endl;
             }
         }
     }
 }
 
+void AOE::CheckTopo(){
+    cout<<">> Topologic sort: ";
+    for(int i = 0; i < VertexNum; i++){
+        if(Topologic[i] != -1)  cout<< Sign[Topologic[i]] <<" ";
+    }
+    cout<<endl;
+}
+
 void AOE::CheckVE(){
-    cout<<"VE: ";
+    cout<<">> VE: ";
     for(int i = 0; i < VertexNum; i++){   //输出VE
         if(Visited[i] == 1) cout<<"["<<Sign[i]<<"]"<<VE[i]<<" ";
     }
@@ -127,7 +127,7 @@ void AOE::CheckVE(){
 }
 
 void AOE::CheckVL(){
-    cout<<"VL: ";
+    cout<<">> VL: ";
     for(int i = 0; i < VertexNum; i++){   //输出VL
         if(Visited[i] == 1)  cout<<"["<<Sign[i]<<"]"<<VL[i]<<" ";
     }

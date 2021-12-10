@@ -4,20 +4,25 @@
 
 int main(){
     int vertexNum,edgeNum,start,end;
-    cout<<"Vertex Number: ";
+    cout<<">> Vertex Number: ";
     cin>>vertexNum;
-    cout<<"Edge Number: ";
+    cout<<">> Edge Number: ";
     cin>>edgeNum;
     Map map(vertexNum);
     if(map.Init(edgeNum)){
         char start,end;
-        cout<<"Start and End: ";
+        cout<<">> Start and End: ";
         cin>>start>>end;
-        map.MinimalPath(start,end);
+        if(!map.MinimalPath(start,end)){
+            cout<<">> Error!"<<endl;
+            return -1;
+        }
+        /////////////////////////////////////////
         AOE aoe(vertexNum,map.GetSign(),start,end);
         aoe.Init(map.GetOrigin(),map.GetDist());
         aoe.Critical_Path();
     }
+    cout<<">> Complete."<<endl;
     return 0;
 }
 
